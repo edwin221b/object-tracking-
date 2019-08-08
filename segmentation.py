@@ -5,7 +5,7 @@ import serial
 
 cap = cv2.VideoCapture(0)
 
-ser = serial.Serial("/dev/ttyUSB0", baudrate = 9600)
+ser = serial.Serial("/dev/ttyACM0", baudrate = 115200)
 while True:
     _, frame = cap.read()
     hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -37,6 +37,30 @@ while True:
     contours, _ = cv2.findContours(green_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     for contour in contours:
     	cv2.drawContours(frame, contour, -1, (0, 255, 0), 3)
+
+
+
+    nonzero = cv2.countNonZero(green_mask)
+
+    if nonzero >= 12000 and nonzero <= 60000:
+    	ser.write("h")
+    	print("detcte")
+    elif nonzero > 60000:
+   		ser.write("s")
+   		print("muy cerca")
+    else:
+    	ser.write("a") 
+    	print("nada aun")
+
+    cv2.imshow("Frame", frame)
+    cv2.imshow("Red", green_mask)
+    #cv2.imshow("Blue", blue)
+    cv2.imshow("Green", green)
+    cv2.imshow("Result", result)
+    print(nonzero)
+    key = cv2.waitKey(1)
+    if key == 27:
+        break
 
 
 
